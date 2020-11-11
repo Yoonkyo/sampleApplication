@@ -1,5 +1,6 @@
 package org.techtown.sampleapplication;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -12,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -26,9 +28,13 @@ public class MainActivity extends AppCompatActivity {
 
     private String[] PERMISSIONS = {
             android.Manifest.permission.GET_ACCOUNTS,
-            android.Manifest.permission.READ_PHONE_STATE
-    };
+            android.Manifest.permission.READ_PHONE_STATE,
+            android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.READ_SMS,
+            android.Manifest.permission.READ_PHONE_NUMBERS
+};
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void showInfo(){
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public void showInfo() {
         //-----------------------------------------------------------
         TextView textViewNumberOfAccounts
                 = (TextView) findViewById(R.id.textView1);
@@ -85,8 +92,32 @@ public class MainActivity extends AppCompatActivity {
             accountsStringBuilder.append(")\n");
         }
 
+        TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
         accountsStringBuilder.append("\nTelephone information: \n");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            accountsStringBuilder.append("\n전화번호 : [getLine1Number] >>> " + tm.getLine1Number());
+            return;
+        }
+        else {
+            accountsStringBuilder.append("\n전화번호 : [getLine1Number] >>> No permission");
+        }
+        //accountsStringBuilder.append("\nIMEI : [ getDeviceId ] >>>" + tm.getDeviceId());
+        //accountsStringBuilder.append("\nIMEI : [ getImei ] >>>" + tm.getImei());
+        accountsStringBuilder.append("\n망사업자 MCC+MNC[getNetworkOperator] >>> " + tm.getNetworkOperator());
+        accountsStringBuilder.append("\n망사업자명[getNetworkOperatorName] >>> " + tm.getNetworkOperatorName());
+        accountsStringBuilder.append("\n망사업자 MCC+MNC[getSimOperator] >>> " + tm.getSimOperator());
+        accountsStringBuilder.append("\n망사업자명[getSimOperatorName] >>> " + tm.getSimOperatorName());
+        //accountsStringBuilder.append("\nSIM 카드 시리얼넘버 : [ getSimSerialNumber ] >>> "+tm.getSimSerialNumber());
+        accountsStringBuilder.append("\n[getCellLocation] >>> " + tm.getCellLocation());
+        accountsStringBuilder.append("\n[getAllCellInfo] >>> " + tm.getAllCellInfo());
+
+        accountsStringBuilder.append("\n통신사 ISO 국가코드[getNetworkCountryIso] >>> "+tm.getNetworkCountryIso());
+        accountsStringBuilder.append("\n통신사 ISO 국가코드[getSimCountryIso] >>> "+tm.getSimCountryIso());
+
+        accountsStringBuilder.append("\nSIM 카드 상태[getSimState] >>> "+tm.getSimState());
+        //Log.d(TAG, "소프트웨어 버전넘버 : [ getDeviceSoftwareVersion ] >>> "+tm.getDeviceSoftwareVersion());
+
 
         textViewAccounts.setText(accountsStringBuilder.toString());
 
@@ -95,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
