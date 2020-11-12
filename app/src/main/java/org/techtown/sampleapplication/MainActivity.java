@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        LocationManager mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
         accountsStringBuilder.append("\nTelephone information: \n");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
@@ -104,13 +107,45 @@ public class MainActivity extends AppCompatActivity {
         }
         //accountsStringBuilder.append("\nIMEI : [ getDeviceId ] >>>" + tm.getDeviceId());
         //accountsStringBuilder.append("\nIMEI : [ getImei ] >>>" + tm.getImei());
+        //accountsStringBuilder.append("\nIMSI : [ getSubscriberId] >>>" + tm.getSubscriberId());
+        //gsf,hardware serial
+        //android.net.wifi.WifiInfo.getMacAddress
+        //bluetooth
         accountsStringBuilder.append("\n망사업자 MCC+MNC[getNetworkOperator] >>> " + tm.getNetworkOperator());
         accountsStringBuilder.append("\n망사업자명[getNetworkOperatorName] >>> " + tm.getNetworkOperatorName());
         accountsStringBuilder.append("\n망사업자 MCC+MNC[getSimOperator] >>> " + tm.getSimOperator());
         accountsStringBuilder.append("\n망사업자명[getSimOperatorName] >>> " + tm.getSimOperatorName());
         //accountsStringBuilder.append("\nSIM 카드 시리얼넘버 : [ getSimSerialNumber ] >>> "+tm.getSimSerialNumber());
+
+
+        //android.net.wifi.WifiManager.getConfiguredNetworks
+        //android.net.wifi.WifiInfo.getBSSID
+        //android.net.wifi.WifiInfo.getSSID
+        /*FusedLocationProviderClient.getLastLocation
+        android.location.LocationManager.requestLocationUpdates
+        android.location.LocationManager.requestSingleUpdate
+        android.location.LocationManager.getLastKnownLocation
+        android.location.LocationManager.addProximityAlert
+        android.telephony.gsm.GsmCellLocation.getCid
+        android.telephony.gsm.GsmCellLocation.getLac
+        */
         accountsStringBuilder.append("\n[getCellLocation] >>> " + tm.getCellLocation());
         accountsStringBuilder.append("\n[getAllCellInfo] >>> " + tm.getAllCellInfo());
+
+        /*
+        android.telephony.TelephonyManager.getNeighboringCellInfo
+        android.telephony.getNeighboringCellInfo
+        FusedLocationProviderClient.getLastLocation
+        android.location.LocationManager.requestLocationUpdates
+        android.location.LocationManager.requestSingleUpdate
+        android.location.LocationManager.getLastKnownLocation
+        android.location.LocationManager.addProximityAlert*/
+
+        //Location location=mLM.getLastKnownLocation(provider);
+
+
+
+
 
         accountsStringBuilder.append("\n통신사 ISO 국가코드[getNetworkCountryIso] >>> "+tm.getNetworkCountryIso());
         accountsStringBuilder.append("\n통신사 ISO 국가코드[getSimCountryIso] >>> "+tm.getSimCountryIso());
