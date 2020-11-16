@@ -2,7 +2,8 @@
     <string name="app_name">sampleApplication</string>
     <string name="textView1">The number of Accounts</string>
     <string name="textView2">Accounts (Types)</string>
-    <string name="location">Location</string>
+    <string name="location">Location(LM)</string>
     <string name="check_location">Check Location</string>
+    <string name="loc_google">Location(Google API)</string>
 
 </resources>
