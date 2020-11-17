@@ -18,10 +18,13 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -55,8 +58,9 @@ public class MainActivity extends AppCompatActivity {
             android.Manifest.permission.ACCESS_FINE_LOCATION,
             android.Manifest.permission.ACCESS_COARSE_LOCATION,
             android.Manifest.permission.READ_SMS,
-            android.Manifest.permission.READ_PHONE_NUMBERS
-    };
+            android.Manifest.permission.READ_PHONE_NUMBERS,
+            android.Manifest.permission.ACCESS_WIFI_STATE
+};
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -233,10 +237,18 @@ public class MainActivity extends AppCompatActivity {
 
         android_id = Secure.getString(getContentResolver(),Secure.ANDROID_ID);
         accountsStringBuilder.append("\n안드로이드 ID >>> " + android_id);
-        accountsStringBuilder.append("\nIMEI : [ getDeviceId ] >>>" + tm.getDeviceId()); //READ_PRIVILEGED_PHONE_STATE
-        accountsStringBuilder.append("\nIMEI : [ getImei ] >>>" + tm.getImei()); //READ_PRIVILEGED_PHONE_STATE
-        accountsStringBuilder.append("\nIMSI : [ getSubscriberId] >>>" + tm.getSubscriberId()); //READ_PRIVILEGED_PHONE_STATE
+        accountsStringBuilder.append("\nIMEI : [getDeviceId] >>>" + tm.getDeviceId()); //READ_PRIVILEGED_PHONE_STATE
+        accountsStringBuilder.append("\nIMEI : [getImei] >>>" + tm.getImei()); //READ_PRIVILEGED_PHONE_STATE
+        accountsStringBuilder.append("\nIMSI : [getSubscriberId] >>>" + tm.getSubscriberId()); //READ_PRIVILEGED_PHONE_STATE
         //gsf,hardware serial
+
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+
+        WifiInfo wInfo = wifiManager.getConnectionInfo();
+        //String macAddress = wInfo.getMacAddress();
+        accountsStringBuilder.append("\nMAC Address >>> " + wInfo.getMacAddress());
+
+        //accountsStringBuilder.append("\nMAC Address >>> " + macAddress);
         //android.net.wifi.WifiInfo.getMacAddress
         //bluetooth
         accountsStringBuilder.append("\n망사업자 MCC+MNC[getNetworkOperator] >>> " + tm.getNetworkOperator());
@@ -244,11 +256,9 @@ public class MainActivity extends AppCompatActivity {
         accountsStringBuilder.append("\n망사업자 MCC+MNC[getSimOperator] >>> " + tm.getSimOperator());
         accountsStringBuilder.append("\n망사업자명[getSimOperatorName] >>> " + tm.getSimOperatorName());
         accountsStringBuilder.append("\nSIM 카드 S/N : [ getSimSerialNumber ] >>> " + tm.getSimSerialNumber()); //READ_PRIVILEGED_PHONE_STATE
-
-
-        //android.net.wifi.WifiManager.getConfiguredNetworks
-        //android.net.wifi.WifiInfo.getBSSID
-        //android.net.wifi.WifiInfo.getSSID
+        accountsStringBuilder.append("\nNetConfig >>> " + wifiManager.getConfiguredNetworks());
+        accountsStringBuilder.append("\nBSSID >>> " + wInfo.getBSSID());
+        accountsStringBuilder.append("\nSSID >>> " + wInfo.getSSID());
 
         /*FusedLocationProviderClient.getLastLocation
         android.location.LocationManager.requestLocationUpdates
@@ -274,10 +284,11 @@ public class MainActivity extends AppCompatActivity {
         //Log.d(TAG, "소프트웨어 버전넘버 : [ getDeviceSoftwareVersion ] >>> "+tm.getDeviceSoftwareVersion());
 
         //LocationManager mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
+        GsmCellLocation cellLocation = (GsmCellLocation) tm.getCellLocation();
+        //accountsStringBuilder.append("\nCell ID >>> " + cellLocation.getCid());
+        //accountsStringBuilder.append("\nLocation area code >>> " + cellLocation.getLac());
 
         textViewAccounts.setText(accountsStringBuilder.toString());
-
 
     }
 
