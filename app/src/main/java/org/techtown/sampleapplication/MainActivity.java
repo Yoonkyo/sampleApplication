@@ -97,11 +97,11 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Location> task) {
                 if (task.isSuccessful() && task.getResult() != null) {
                     Location mCurrentLocation = task.getResult();
-                    String message = "Lat:" + mCurrentLocation.getLatitude() + " / Alt:" + mCurrentLocation.getAltitude();
-                    textView4.setText("Location(Google API)-> "+message);
-                    Log.d("Location(Google API)", "Location(Google API)-> "+message);
+                    String message = "Lat:" + mCurrentLocation.getLatitude() + "/ Alt:" + mCurrentLocation.getAltitude();
+                    textView4.setText("Loc(Google API)-> "+message);
+                    Log.d("Loc(Google API)", "Loc(Google API)-> "+message);
                 } else {
-                    Log.d("Location(Google API)", "getCurrentLocation"+ task.getException());
+                    Log.d("Loc(Google API)", "getCurrentLocation"+ task.getException());
                 }
             }
         };
@@ -130,20 +130,20 @@ public class MainActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            String message = "Location info: No permission";
+            String message = "Loc info: No permission";
             textView3.setText(message);
-            Log.d("Location(LM)", message);
+            Log.d("Loc(LM)", message);
             //return;
         }
 
         Location location = mLM.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        Log.d("Location(LM)", String.valueOf(location));
-        textView3.setText("Location(LM): " +location);
+        Log.d("Loc(LM)", String.valueOf(location));
+        textView3.setText("Loc(LM): " +location);
 
         if (location != null){
             double latitude = location.getLatitude();
             double longitude = location.getLongitude();
-            String message = "Location(LM) -> Latitude:" + latitude + " / Longitude:" + longitude;
+            String message = "Loc(LM) -> Latitude:" + latitude + " / Longitude:" + longitude;
 
             textView3.setText(message);
             Log.d(TAG, message);
@@ -256,7 +256,8 @@ public class MainActivity extends AppCompatActivity {
         accountsStringBuilder.append("\n망사업자 MCC+MNC[getSimOperator] >>> " + tm.getSimOperator());
         accountsStringBuilder.append("\n망사업자명[getSimOperatorName] >>> " + tm.getSimOperatorName());
         accountsStringBuilder.append("\nSIM 카드 S/N : [ getSimSerialNumber ] >>> " + tm.getSimSerialNumber()); //READ_PRIVILEGED_PHONE_STATE
-        accountsStringBuilder.append("\nNetConfig >>> " + wifiManager.getConfiguredNetworks());
+        accountsStringBuilder.append("\nNetConfig >>> Too Long(Log)");
+        Log.d(TAG, "NetConfig >>> " + wifiManager.getConfiguredNetworks());
         accountsStringBuilder.append("\nBSSID >>> " + wInfo.getBSSID());
         accountsStringBuilder.append("\nSSID >>> " + wInfo.getSSID());
 
@@ -289,7 +290,6 @@ public class MainActivity extends AppCompatActivity {
         //accountsStringBuilder.append("\nLocation area code >>> " + cellLocation.getLac());
 
         textViewAccounts.setText(accountsStringBuilder.toString());
-
     }
 
 
