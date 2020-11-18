@@ -231,10 +231,10 @@ public class MainActivity extends AppCompatActivity {
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         accountsStringBuilder.append("● Telephone information: ");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            accountsStringBuilder.append("\n전화번호 : [getLine1Number] >>> No permission");
+            accountsStringBuilder.append("\nPhone Number : [getLine1Number] >>> No permission");
             return;
         } else {
-            accountsStringBuilder.append("\n전화번호 : [getLine1Number] >>> "  + tm.getLine1Number());
+            accountsStringBuilder.append("\nPhone Number : [getLine1Number] >>> "  + tm.getLine1Number());
         }
 
         android_id = Secure.getString(getContentResolver(),Secure.ANDROID_ID);
