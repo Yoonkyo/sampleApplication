@@ -24,6 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 import android.view.View;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
             android.Manifest.permission.READ_PHONE_NUMBERS,
             android.Manifest.permission.ACCESS_WIFI_STATE
 };
+    private String SerialNumber;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -227,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        accountsStringBuilder.append("\n● Telephone information: ");
+        accountsStringBuilder.append("● Telephone information: ");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             accountsStringBuilder.append("\n전화번호 : [getLine1Number] >>> No permission");
             return;
@@ -236,7 +238,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         android_id = Secure.getString(getContentResolver(),Secure.ANDROID_ID);
-        accountsStringBuilder.append("\n안드로이드 ID >>> " + android_id);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            SerialNumber = Build.getSerial();
+        }
+        else
+        {
+            SerialNumber = Build.SERIAL;
+        }
+        accountsStringBuilder.append("\nHardware Serial >>> " + SerialNumber);
+        accountsStringBuilder.append("\nAndroid ID >>> " + android_id);
         accountsStringBuilder.append("\nIMEI : [getDeviceId] >>>" + tm.getDeviceId()); //READ_PRIVILEGED_PHONE_STATE
         accountsStringBuilder.append("\nIMEI : [getImei] >>>" + tm.getImei()); //READ_PRIVILEGED_PHONE_STATE
         accountsStringBuilder.append("\nIMSI : [getSubscriberId] >>>" + tm.getSubscriberId()); //READ_PRIVILEGED_PHONE_STATE
@@ -251,14 +262,40 @@ public class MainActivity extends AppCompatActivity {
         //accountsStringBuilder.append("\nMAC Address >>> " + macAddress);
         //android.net.wifi.WifiInfo.getMacAddress
         //bluetooth
-        accountsStringBuilder.append("\n망사업자 MCC+MNC[getNetworkOperator] >>> " + tm.getNetworkOperator());
-        accountsStringBuilder.append("\n망사업자명[getNetworkOperatorName] >>> " + tm.getNetworkOperatorName());
-        accountsStringBuilder.append("\n망사업자 MCC+MNC[getSimOperator] >>> " + tm.getSimOperator());
-        accountsStringBuilder.append("\n망사업자명[getSimOperatorName] >>> " + tm.getSimOperatorName());
-        accountsStringBuilder.append("\nSIM 카드 S/N : [ getSimSerialNumber ] >>> " + tm.getSimSerialNumber()); //READ_PRIVILEGED_PHONE_STATE
-        accountsStringBuilder.append("\nNetConfig >>> " + wifiManager.getConfiguredNetworks());
+        accountsStringBuilder.append("\n[getNetworkOperator] >>> " + tm.getNetworkOperator()); //망사업자 MCC+MNC
+        accountsStringBuilder.append("\n[getNetworkOperatorName] >>> " + tm.getNetworkOperatorName()); //망사업자명
+        accountsStringBuilder.append("\n[getSimOperator] >>> " + tm.getSimOperator()); //망사업자 MCC+MNC
+        accountsStringBuilder.append("\n[getSimOperatorName] >>> " + tm.getSimOperatorName());
+        accountsStringBuilder.append("\n[getSimSerialNumber] >>> " + tm.getSimSerialNumber()); //READ_PRIVILEGED_PHONE_STATE, SIM 카드 S/N :
+        //Too long to show in text
+        accountsStringBuilder.append("\nNetConfig >>> Too Long (Log)");
+        //accountsStringBuilder.append("\nNetConfig >>> " + wifiManager.getConfiguredNetworks());
+        Log.d(TAG, "NetConfig >>> " + wifiManager.getConfiguredNetworks());
+
         accountsStringBuilder.append("\nBSSID >>> " + wInfo.getBSSID());
         accountsStringBuilder.append("\nSSID >>> " + wInfo.getSSID());
+
+        int cid = 0;
+        int lac = 0;
+        try {
+            if (tm != null) {
+                GsmCellLocation gc = (GsmCellLocation) tm.getCellLocation();
+                if (null != gc) {
+                    cid = gc.getCid();
+                    lac = gc.getLac();
+                }
+            }
+        } catch (Exception e) {
+            if (tm != null) {
+                CdmaCellLocation location = (CdmaCellLocation) tm.getCellLocation();
+                if (null != location) {
+                }
+                lac = location.getNetworkId();
+                cid = location.getBaseStationId();
+                cid /= 16;
+            }
+        }
+        accountsStringBuilder.append("\n[getCid, getLac] >>> " + lac + "," + cid);
 
         /*FusedLocationProviderClient.getLastLocation
         android.location.LocationManager.requestLocationUpdates
@@ -275,13 +312,10 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "[getAllCellInfo] >>> " + tm.getAllCellInfo());
         accountsStringBuilder.append("\n[getNeighboringCellInfo] >>> "+tm.getNeighboringCellInfo());
 
-        //Location location=mLM.getLastKnownLocation(provider);
-
         //accountsStringBuilder.append("\n통신사 ISO 국가코드[getNetworkCountryIso] >>> " + tm.getNetworkCountryIso());
         //accountsStringBuilder.append("\n통신사 ISO 국가코드[getSimCountryIso] >>> " + tm.getSimCountryIso());
-
-        accountsStringBuilder.append("\nSIM 카드 상태[getSimState] >>> " + tm.getSimState());
-        //Log.d(TAG, "소프트웨어 버전넘버 : [ getDeviceSoftwareVersion ] >>> "+tm.getDeviceSoftwareVersion());
+        //accountsStringBuilder.append("\nSIM 카드 상태[getSimState] >>> " + tm.getSimState());
+        //Log.d(TAG, "소프트웨어 버전넘버 : [getDeviceSoftwareVersion] >>> "+tm.getDeviceSoftwareVersion());
 
         //LocationManager mLM = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         GsmCellLocation cellLocation = (GsmCellLocation) tm.getCellLocation();
