@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<Location> task) {
                 if (task.isSuccessful() && task.getResult() != null) {
                     Location mCurrentLocation = task.getResult();
-                    String message = "Lat:" + mCurrentLocation.getLatitude() + " / Alt:" + mCurrentLocation.getAltitude();
+                    String message = "Latitude:" + mCurrentLocation.getLatitude() + " / Longitude:" + mCurrentLocation.getLongitude() + " / Alt:" + mCurrentLocation.getAltitude();
                     textView4.setText("Location(Google API)-> "+message);
                     Log.d("Location(Google API)", "Location(Google API)-> "+message);
                 } else {
@@ -138,6 +138,13 @@ public class MainActivity extends AppCompatActivity {
             //return;
         }
 
+        GPSListener gpsListener = new GPSListener();
+        long minTime = 3000;
+        float minDistance = 0;
+
+        mLM.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, gpsListener);
+        Toast.makeText(getApplicationContext(), "내 위치확인 요청함", Toast.LENGTH_SHORT).show();
+
         Location location = mLM.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         Log.d("Location(LM)", String.valueOf(location));
         textView3.setText("Location(LM): " +location);
@@ -152,12 +159,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-        GPSListener gpsListener = new GPSListener();
-        long minTime = 10000;
-        float minDistance = 0;
-
-        mLM.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTime, minDistance, gpsListener);
-        Toast.makeText(getApplicationContext(), "내 위치확인 요청함", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -199,8 +200,6 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void showInfo() {
         //-----------------------------------------------------------
-        TextView textViewNumberOfAccounts
-                = (TextView) findViewById(R.id.textView1);
         TextView textViewAccounts
                 = (TextView) findViewById(R.id.textView2);
 
@@ -214,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
         // 계정의 개수를 텍스트 뷰로 출력합니다.
 
         int numberOfAccounts = accounts.length;
-        textViewNumberOfAccounts.setText("● The number of Accounts: " + numberOfAccounts);
+        //textViewNumberOfAccounts.setText("● The number of Accounts: " + numberOfAccounts);
 
         //-----------------------------------------------------------
         // 계정들을 텍스트 뷰로 출력합니다.
@@ -234,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
             accountsStringBuilder.append("\nPhone Number : [getLine1Number] >>> No permission");
             return;
         } else {
-            accountsStringBuilder.append("\nPhone Number : [getLine1Number] >>> "  + tm.getLine1Number());
+            accountsStringBuilder.append("\nPhone Number >>> "  + tm.getLine1Number());
         }
 
         android_id = Secure.getString(getContentResolver(),Secure.ANDROID_ID);
